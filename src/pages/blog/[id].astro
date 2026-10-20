@@ -1,0 +1,52 @@
+---
+// src/pages/blog/[id].astro
+import { getCollection, render } from 'astro:content';
+// import ProgressBar from '../../components/ProgressBar.vue';
+// import LikeButton from '../../components/LikeButton.vue';
+
+// 1. Tell Astro which paths to pre-render at build time
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { id: post.id }, // Astro 5 uses 'id' instead of 'slug' by default for glob loader
+    props: { post },
+  }));
+}
+
+// 2. Extract the post data passed from getStaticPaths
+const { post } = Astro.props;
+
+// 3. Render the Markdown/MDX content using Astro 5's render() function
+const { Content } = await render(post);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{post.data.title}</title>
+  </head>
+  <body class="bg-white text-gray-900 font-sans">
+    
+    <!-- Vue Island: Hydrates immediately for reading progress -->
+    <!-- <ProgressBar client:load /> -->
+
+    <main class="max-w-2xl mx-auto px-4 py-12">
+      <a href="/" class="text-sm text-emerald-600 hover:underline mb-6 inline-block">← Back to Home</a>
+      
+      <header class="mb-8">
+        <h1 class="text-4xl font-extrabold tracking-tight mb-2">{post.data.title}</h1>
+        <p class="text-gray-500 text-sm">{post.data.publishDate.toDateString()}</p>
+      </header>
+
+      <!-- Static HTML Article Body (Zero JS) -->
+      <article class="prose lg:prose-xl mb-12">
+        <Content />
+      </article>
+
+      <!-- Vue Island: Hydrates when idle -->
+      <div class="border-t pt-6">
+        <!-- <LikeButton client:idle /> -->
+      </div>
+    </main>
+  </body>
+</html>

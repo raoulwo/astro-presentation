@@ -1,11 +1,35 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// Fetch all posts, sorted by publish date descending
+const allPosts = await getCollection('blog');
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
+);
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<html lang="en">
+  <head>
+    <title>My Blog Index</title>
+  </head>
+  <body class="bg-gray-50 text-gray-900">
+    <main class="max-w-xl mx-auto py-12 px-4">
+      <h1 class="text-3xl font-bold mb-6">Recent Articles</h1>
+      
+      <div class="space-y-6">
+			{sortedPosts.map(post => (
+			<article class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+				<h2 class="text-xl font-semibold mb-1">
+				<!-- Ensure this matches your file parameter: /blog/[id] or /blog/[slug] -->
+				<a href={`/blog/${post.id}`} class="hover:text-emerald-600 transition">
+					{post.data.title}
+				</a>
+				</h2>
+				<p class="text-xs text-gray-400 mb-3">{post.data.publishDate.toDateString()}</p>
+				<p class="text-gray-600 text-sm">{post.data.description}</p>
+			</article>
+			))}
+      </div>
+    </main>
+  </body>
+</html>
