@@ -1,4 +1,5 @@
 ---
+import "../styles/global.css";
 import { getCollection } from 'astro:content';
 
 // Fetch all posts, sorted by publish date descending
@@ -8,28 +9,53 @@ const sortedPosts = allPosts.sort(
 );
 ---
 
-<html lang="en">
+<html lang="en" class="h-full">
   <head>
+    <meta charset="UTF-8" />
     <title>My Blog Index</title>
   </head>
-  <body class="bg-gray-50 text-gray-900">
-    <main class="max-w-xl mx-auto py-12 px-4">
-      <h1 class="text-3xl font-bold mb-6">Recent Articles</h1>
+  <body class="bg-slate-50 text-slate-900 h-full flex flex-col justify-between font-sans antialiased">
+    
+    <!-- Centered main wrapper -->
+    <main class="max-w-2xl w-full mx-auto px-6 py-16 flex-1">
       
-      <div class="space-y-6">
-			{sortedPosts.map(post => (
-			<article class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-				<h2 class="text-xl font-semibold mb-1">
-				<!-- Ensure this matches your file parameter: /blog/[id] or /blog/[slug] -->
-				<a href={`/blog/${post.id}`} class="hover:text-emerald-600 transition">
-					{post.data.title}
-				</a>
-				</h2>
-				<p class="text-xs text-gray-400 mb-3">{post.data.publishDate.toDateString()}</p>
-				<p class="text-gray-600 text-sm">{post.data.description}</p>
-			</article>
-			))}
+      <!-- Header section -->
+      <header class="mb-10 text-center">
+        <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Latest Articles</h1>
+        <p class="text-slate-500 text-sm mt-2">Thoughts, tutorials, and insights built with Astro & Vue.</p>
+      </header>
+      
+      <!-- Posts list -->
+      <div class="space-y-4">
+        {sortedPosts.map(post => (
+          <article class="bg-white p-5 rounded-xl shadow-sm border border-slate-200/60 hover:shadow-md transition-all">
+            <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-2">
+              
+              <!-- Only the title is a link -->
+              <h2 class="text-lg font-semibold">
+                <a href={`/blog/${post.id}`} class="text-slate-800 hover:text-emerald-600 transition-colors">
+                  {post.data.title}
+                </a>
+              </h2>
+
+              <time datetime={post.data.publishDate.toISOString()} class="text-xs text-slate-400 font-medium">
+                {new Date(post.data.publishDate).toLocaleDateString('en-US', { 
+                  month: 'short', 
+                  day: 'numeric', 
+                  year: 'numeric' 
+                })}
+              </time>
+            </div>
+
+            <p class="text-slate-600 text-sm leading-relaxed">{post.data.description}</p>
+          </article>
+        ))}
       </div>
     </main>
+
+    <!-- Simple footer -->
+    <footer class="py-6 text-center text-xs text-slate-400 border-t border-slate-200/60">
+      &copy; {new Date().getFullYear()} My Blog. All rights reserved.
+    </footer>
   </body>
 </html>
