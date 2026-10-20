@@ -14,6 +14,8 @@ They can be split up into Client and Server Islands.
 
 Both islands are more expensive to run, slower to process and are separate from the rest of the page.
 
-### Examples of Island Syntax
-- client: load
-- server: fetch
+## What could be an Island
+- **Header:** Changes to the menu, updating icons, etc.
+- **Image Carousel:** Dynamic image carousel with infinite scrolling.
+- **Comments:** Fetching and displaying comments for a blog post.
+- **Footer:** Updating copyright year, social media links, etc.
