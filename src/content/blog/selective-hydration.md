@@ -7,4 +7,12 @@ publishDate: 2026-10-03
 ## Selective Hydration
 
 Partial or Selective Hydration renders static HTML on the server and defines certain placeholders or "slots".
-These are dynamic and can be hydrated on the client, reusing their initial HTML code that's still on the server.
+Only these components are targeted by the browser for interactivity.
+
+### Examples
+- Comment Form
+- Buttons
+- Dropdown Menus
+- etc.
+
+Static content remains untouched and does not change.
