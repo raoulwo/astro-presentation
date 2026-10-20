@@ -4,49 +4,131 @@ import { getCollection, render } from 'astro:content';
 // import ProgressBar from '../../components/ProgressBar.vue';
 // import LikeButton from '../../components/LikeButton.vue';
 
-// 1. Tell Astro which paths to pre-render at build time
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   return posts.map(post => ({
-    params: { id: post.id }, // Astro 5 uses 'id' instead of 'slug' by default for glob loader
+    params: { id: post.id },
     props: { post },
   }));
 }
 
-// 2. Extract the post data passed from getStaticPaths
 const { post } = Astro.props;
-
-// 3. Render the Markdown/MDX content using Astro 5's render() function
 const { Content } = await render(post);
 ---
 
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{post.data.title}</title>
   </head>
-  <body class="bg-white text-gray-900 font-sans">
+  <body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen">
     
-    <!-- Vue Island: Hydrates immediately for reading progress -->
-    <!-- <ProgressBar client:load /> -->
+    <!-- Header/Navigation Bar -->
+    <nav class="border-b border-slate-200/60 bg-white/80 backdrop-blur sticky top-0 z-10">
+      <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="/" class="text-xs font-semibold text-slate-500 hover:text-emerald-600 transition flex items-center gap-1">
+          <span>←</span> Back to Overview
+        </a>
+        <span class="text-xs font-medium text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">Slide Preview</span>
+      </div>
+    </nav>
 
-    <main class="max-w-2xl mx-auto px-4 py-12">
-      <a href="/" class="text-sm text-emerald-600 hover:underline mb-6 inline-block">← Back to Home</a>
-      
-      <header class="mb-8">
-        <h1 class="text-4xl font-extrabold tracking-tight mb-2">{post.data.title}</h1>
-        <p class="text-gray-500 text-sm">{post.data.publishDate.toDateString()}</p>
+    <main class="max-w-3xl mx-auto px-6 py-12">
+      <!-- Article Header -->
+      <header class="mb-12 pb-8 border-b border-slate-200/80">
+        <p class="text-emerald-600 text-xs font-bold tracking-wider uppercase mb-2">Key Concept</p>
+        <h1 class="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-4">
+          {post.data.title}
+        </h1>
+        <div class="flex items-center gap-3 text-slate-400 text-xs font-medium">
+          <time datetime={post.data.publishDate.toISOString()}>
+            {post.data.publishDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          </time>
+          <span>•</span>
+          <span>Astro & Vue Presentation</span>
+        </div>
       </header>
 
-      <!-- Static HTML Article Body (Zero JS) -->
-      <article class="prose lg:prose-xl mb-12">
+      <!-- Markdown Article Content Wrapper -->
+      <article class="bg-white p-8 sm:p-12 rounded-2xl border border-slate-200/80 shadow-sm slide-content">
         <Content />
       </article>
 
-      <!-- Vue Island: Hydrates when idle -->
-      <div class="border-t pt-6">
-        <!-- <LikeButton client:idle /> -->
+      <!-- Footer Action -->
+      <div class="mt-12 text-center">
+        <a href="/" class="inline-flex items-center gap-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 transition">
+          <span>Explore All Presentation Slides</span>
+          <span>→</span>
+        </a>
       </div>
     </main>
+
   </body>
 </html>
+
+<!-- Scoped CSS for enhanced slide typography and bullet styling -->
+<style is:global>
+  /* Headings spacing & contrast */
+  .slide-content h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a; /* slate-900 */
+    margin-top: 2.25rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.025em;
+  }
+
+  .slide-content h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b; /* slate-800 */
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Body text paragraph margins */
+  .slide-content p {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: #334155; /* slate-700 */
+    margin-bottom: 1.25rem;
+  }
+
+  /* Custom Emerald Pill Bullets for Lists */
+  .slide-content ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 1rem;
+    margin-bottom: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .slide-content ul li {
+    position: relative;
+    padding-left: 1.75rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #334155;
+  }
+
+  /* Custom check/bullet icon */
+  .slide-content ul li::before {
+    content: "•";
+    position: absolute;
+    left: 0.25rem;
+    top: -0.1rem;
+    color: #059669; /* emerald-600 */
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 1;
+  }
+
+  /* Strong/bold text highlighting */
+  .slide-content strong {
+    color: #0f172a;
+    font-weight: 700;
+  }
+</style>
