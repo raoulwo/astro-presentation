@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import { getCollection } from 'astro:content';
+import SearchPosts from '../components/SearchPosts.vue'; // <-- Import the Vue island
 
 // Fetch all posts, sorted by publish date descending
 const allPosts = await getCollection('blog');
@@ -25,32 +26,9 @@ const sortedPosts = allPosts.sort(
         <p class="text-slate-500 text-sm mt-2">Thoughts, tutorials, and insights built with Astro & Vue.</p>
       </header>
       
-      <!-- Posts list -->
-      <div class="space-y-4">
-        {sortedPosts.map(post => (
-          <article class="bg-white p-5 rounded-xl shadow-sm border border-slate-200/60 hover:shadow-md transition-all">
-            <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-2">
-              
-              <!-- Only the title is a link -->
-              <h2 class="text-lg font-semibold">
-                <a href={`/blog/${post.id}`} class="text-slate-800 hover:text-emerald-600 transition-colors">
-                  {post.data.title}
-                </a>
-              </h2>
+      <!-- VUE ISLAND: Passes static server-loaded posts into a reactive client search component -->
+      <SearchPosts client:load posts={sortedPosts} />
 
-              <time datetime={post.data.publishDate.toISOString()} class="text-xs text-slate-400 font-medium">
-                {new Date(post.data.publishDate).toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric', 
-                  year: 'numeric' 
-                })}
-              </time>
-            </div>
-
-            <p class="text-slate-600 text-sm leading-relaxed">{post.data.description}</p>
-          </article>
-        ))}
-      </div>
     </main>
 
     <!-- Simple footer -->
